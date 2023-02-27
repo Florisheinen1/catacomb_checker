@@ -5,7 +5,8 @@ from telegram import Bot
 import asyncio
 
 URL = "https://www.billetterie-parismusees.paris.fr/selection/timeslotpass?productId=101972921593&gtmStepTracking=true"
-STATS_NOTIFY_INTERVAL = 60 * 30
+STATS_NOTIFY_INTERVAL = 60 * 30 # seconds, every half hour
+CHECK_INTERVAL = 10 # seconds
 
 class StatisticsHandler:
     def __init__(self):
