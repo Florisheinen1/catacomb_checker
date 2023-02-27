@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 from telegram import Bot
+from telegram import error
 import asyncio
 
 URL = "https://www.billetterie-parismusees.paris.fr/selection/timeslotpass?productId=101972921593&gtmStepTracking=true"
@@ -137,6 +138,8 @@ class TelegramHandler:
                     await bot.send_message(text=message, chat_id=id)
         except TimeoutError as e:
             print("======== Error here happened: " + str(e))
+        except error.TimedOut as e:
+            print("Timed out on broadcast")
 
     def broadcast(message):
         asyncio.run(TelegramHandler.broadcast_message_async(message))
@@ -180,7 +183,7 @@ def main():
 
         stats.update_errors()
 
-        time.sleep(5)
+        time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
     try:
