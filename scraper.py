@@ -5,7 +5,7 @@ from telegram import Bot
 import asyncio
 
 URL = "https://www.billetterie-parismusees.paris.fr/selection/timeslotpass?productId=101972921593&gtmStepTracking=true"
-STATS_NOTIFY_INTERVAL = 60 * 30 # seconds, every half hour
+STATS_NOTIFY_INTERVAL = 60 * 5 # seconds, every half hour
 CHECK_INTERVAL = 15 # seconds
 
 class StatisticsHandler:
@@ -59,7 +59,7 @@ class Scraper:
         except requests.exceptions.ConnectionError:
             stats.add_error("No internet connection")
         except Exception as e:
-            print("======= Oh no, time out maybe? " + str(e))
+            print("======= Oh no, time out maybe? " + str(e) + " of type: '" + str(type(e)) + "'")
 
     def get_timeslots_html(soup, stats: StatisticsHandler):
         timeslots_container = soup.find(id="timeSlotsContainer")
@@ -131,12 +131,12 @@ class TelegramHandler:
 
         bot = Bot(token)
         
-        for id in chats:
-            async with bot:
-                try:
+        try:
+            for id in chats:
+                async with bot:
                     await bot.send_message(text=message, chat_id=id)
-                except TimeoutError as e:
-                    print("======== Error here happened: " + str(e))
+        except TimeoutError as e:
+            print("======== Error here happened: " + str(e))
 
     def broadcast(message):
         asyncio.run(TelegramHandler.broadcast_message_async(message))
@@ -188,7 +188,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Exited due to keyboard")
     except Exception as e:
-        print("Some other exception happened: " + str(e))
-        TelegramHandler.broadcast("Unhandled exception ocurred: " + str(e))
+        print("Some other exception happened: " + str(e) + ", of type: '" + str(type(e)) + "'")
+        TelegramHandler.broadcast("Unhandled exception ocurred: " + str(e) + ", of type: '" + str(type(e)) + "'")
     
     TelegramHandler.broadcast("Stopped watching")
