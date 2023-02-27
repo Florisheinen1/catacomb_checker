@@ -6,7 +6,7 @@ import asyncio
 
 URL = "https://www.billetterie-parismusees.paris.fr/selection/timeslotpass?productId=101972921593&gtmStepTracking=true"
 STATS_NOTIFY_INTERVAL = 60 * 30 # seconds, every half hour
-CHECK_INTERVAL = 10 # seconds
+CHECK_INTERVAL = 15 # seconds
 
 class StatisticsHandler:
     def __init__(self):
@@ -63,7 +63,13 @@ class Scraper:
 
     def get_timeslots_html(soup, stats: StatisticsHandler):
         timeslots_container = soup.find(id="timeSlotsContainer")
-        timeslots_container_list = timeslots_container.find("ul")
+        
+        try:
+            timeslots_container_list = timeslots_container.find("ul")
+        except AttributeError as e:
+            stats.no_timeslots_found += 1
+            return []
+
         if not timeslots_container_list:
             stats.no_timeslots_found += 1
             return []
